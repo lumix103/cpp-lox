@@ -7,7 +7,8 @@ std::string lox::ASTPrinter::parenthesize(std::string name, std::list<Expression
 	str.append(name);
 	for (auto expr : expressions) {
 		str.push_back(' ');
-		str.append(expr->accept(this));
+		std::shared_ptr<std::string> var = std::static_pointer_cast<std::string>(expr->accept(this));
+		str.append(*var);
 	}
 	str.push_back(')');
 	return str;
@@ -15,25 +16,25 @@ std::string lox::ASTPrinter::parenthesize(std::string name, std::list<Expression
 
 std::string lox::ASTPrinter::print(Expression* expression)
 {
-	return expression->accept(this);
+	return *(std::static_pointer_cast<std::string>(expression->accept(this)));
 }
 
-std::string lox::ASTPrinter::visit(Binary* _binary)
+std::shared_ptr<void> lox::ASTPrinter::visit(Binary* _binary)
 {
-	return parenthesize(_binary->op.lexeme, { *_binary->left, *_binary->right });
+	return std::make_shared<std::string>(parenthesize(_binary->op.lexeme, { *_binary->left, *_binary->right }));
 }
 
-std::string lox::ASTPrinter::visit(Grouping* _grouping)
+std::shared_ptr<void> lox::ASTPrinter::visit(Grouping* _grouping)
 {
-	return parenthesize("group", { *_grouping->expression });
+	return std::make_shared<std::string>(parenthesize("group", { *_grouping->expression }));
 }
 
-std::string lox::ASTPrinter::visit(Literal* _literal)
+std::shared_ptr<void> lox::ASTPrinter::visit(Literal* _literal)
 {
-	return _literal->value.lexeme;
+	return std::make_shared<std::string>(_literal->value.lexeme);
 }
 
-std::string lox::ASTPrinter::visit(Unary* _unary)
+std::shared_ptr<void> lox::ASTPrinter::visit(Unary* _unary)
 {
-	return parenthesize(_unary->op.lexeme, { *_unary->right });
+	return std::make_shared<std::string>(parenthesize(_unary->op.lexeme, { *_unary->right }));
 }

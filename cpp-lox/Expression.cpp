@@ -2,46 +2,46 @@
 
 namespace lox {
 
-	std::string Assign::accept(Visitor* visitor) {
+	std::shared_ptr<void> Assign::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
 
-	std::string Binary::accept(Visitor* visitor) {
+	std::shared_ptr<void> Binary::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
 
-	std::string Call::accept(Visitor* visitor) {
+	std::shared_ptr<void> Call::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
-	std::string Get::accept(Visitor* visitor) {
-		return visitor->visit(this);
-	}
-
-	std::string Grouping::accept(Visitor* visitor) {
+	std::shared_ptr<void> Get::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
 
-	std::string Literal::accept(Visitor* visitor) {
+	std::shared_ptr<void> Grouping::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
 
-	std::string Logical::accept(Visitor* visitor) {
+	std::shared_ptr<void> Literal::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
 
-	std::string Set::accept(Visitor* visitor) {
+	std::shared_ptr<void> Logical::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
-	std::string Super::accept(Visitor* visitor) {
+
+	std::shared_ptr<void> Set::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
-	std::string This::accept(Visitor* visitor) {
+	std::shared_ptr<void> Super::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
-	std::string Unary::accept(Visitor* visitor) {
+	std::shared_ptr<void> This::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
-	std::string Variable::accept(Visitor* visitor) {
+	std::shared_ptr<void> Unary::accept(Visitor* visitor) {
+		return visitor->visit(this);
+	}
+	std::shared_ptr<void> Variable::accept(Visitor* visitor) {
 		return visitor->visit(this);
 	}
 }

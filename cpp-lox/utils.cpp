@@ -23,3 +23,12 @@ void lox::report(int line, const char* where, const char* message) {
 		<< ":" << message << "\n";
 	hadError = true;
 }
+
+lox::RuntimeError::RuntimeError(Token op, std::string message) : op(op), messgae(message)
+{
+}
+
+const char* lox::RuntimeError::what() const throw()
+{
+	return messgae.c_str();
+}
