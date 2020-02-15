@@ -4,7 +4,7 @@
 #include "Expression.h"
 
 namespace lox {
-	class ASTPrinter : public Visitor {
+	class ASTPrinter : public ExpressionVisitor {
 	private:
 		std::string parenthesize(std::string name, std::list<Expression*> expressions);
 	public:

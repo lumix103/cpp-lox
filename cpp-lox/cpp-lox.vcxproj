@@ -20,20 +20,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ASTPrinter.cpp" />
+    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Statement.cpp" />
     <ClCompile Include="Token.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ASTPrinter.h" />
+    <ClInclude Include="Environment.h" />
     <ClInclude Include="Expression.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="Statement.h" />
     <ClInclude Include="Token.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="utils.h" />

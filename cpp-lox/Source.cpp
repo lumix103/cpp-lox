@@ -14,25 +14,6 @@ void run(std::string input);
 void start(int argc, char** argv);
 
 int main(int argc, char** argv) {
-	/*
-	lox::Token unary_op = {lox::MINUS, "-" ,1 , ""};
-	lox::Token literal_value = { lox::NUMBER, "123", 1, "123" };
-	auto literal_expr = std::make_unique<lox::Expression*>(new lox::Literal(literal_value));
-	auto unary_expr = std::make_unique<lox::Expression*>(new lox::Unary(unary_op, std::move(literal_expr)));
-
-	literal_value.lexeme = "45.67";
-	literal_value.value = "45.67";
-	auto literal_expr1 = std::make_unique<lox::Expression*>(new lox::Literal(literal_value));
-	auto grouping = std::make_unique<lox::Expression*>(new lox::Grouping(std::move(literal_expr1)));
-
-	lox::Token binary_op = { lox::STAR, "*", 1, "" };
-
-	auto binary = std::make_unique<lox::Expression*>(new lox::Binary(std::move(unary_expr), binary_op, std::move(grouping)));
-
-	lox::ASTPrinter printer;
-
-	std::cout << printer.print(*binary) << std::endl;
-	*/
 	start(argc, argv);
 	return 0;
 }
@@ -74,11 +55,10 @@ void run(std::string input) {
 	lox::Lexer lexer(input);
 	auto tokens = lexer.scanTokens();
 	lox::Parser parser(tokens);
-	lox::ExprPtr expr = std::move(parser.parse());
+	std::deque<lox::StmtPtr> statements = parser.parse();
 	if (lox::hadError) return;
-	//TODO
 	lox::Interpreter* interpreter = *lox::Interpreter::getInstance();
-	interpreter->interpret(*expr);
+	interpreter->interpret(statements);
 }
 
 void start(int argc, char** argv) {

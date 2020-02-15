@@ -8,7 +8,7 @@
 namespace lox {
 	struct Expression {
 		virtual ~Expression() {}
-		virtual std::shared_ptr<void> accept(class Visitor* visitor) = 0;
+		virtual std::shared_ptr<void> accept(class ExpressionVisitor* visitor) = 0;
 	};
 
 	std::shared_ptr<Expression*> typedef ExprPtr;
@@ -20,7 +20,7 @@ namespace lox {
 		Assign(Token name, ExprPtr value) : name(name) {
 			this->value = std::move(value);
 		}
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Binary : Expression {
@@ -33,7 +33,7 @@ namespace lox {
 			this->right = std::move(right);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Call : Expression {
@@ -48,7 +48,7 @@ namespace lox {
 			this->arguments = std::move(arguments);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Get : Expression {
@@ -59,7 +59,7 @@ namespace lox {
 			this->object = std::move(object);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Grouping : Expression {
@@ -69,7 +69,7 @@ namespace lox {
 			this->expression = std::move(expression);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Literal : Expression {
@@ -77,7 +77,7 @@ namespace lox {
 
 		Literal(Token value) : value(value) {}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Logical : Expression {
@@ -90,7 +90,7 @@ namespace lox {
 			this->right = std::move(right);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Set : Expression {
@@ -103,7 +103,7 @@ namespace lox {
 			this->value = std::move(value);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Super : Expression {
@@ -112,7 +112,7 @@ namespace lox {
 
 		Super(Token keyword, Token method) : keyword(keyword), method(method) {}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 
 	};
 
@@ -121,7 +121,7 @@ namespace lox {
 
 		This(Token keyword) : keyword(keyword) {}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Unary : Expression {
@@ -132,7 +132,7 @@ namespace lox {
 			this->right = std::move(right);
 		}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
 	struct Variable : Expression {
@@ -140,10 +140,10 @@ namespace lox {
 
 		Variable(Token name) : name(name) {}
 
-		std::shared_ptr<void> accept(Visitor* visitor);
+		std::shared_ptr<void> accept(ExpressionVisitor* visitor);
 	};
 
-	class Visitor {
+	class ExpressionVisitor {
 	public:
 		virtual std::shared_ptr<void> visit(Assign* _assign) = 0;
 		virtual std::shared_ptr<void> visit(Binary* _binary) = 0;
