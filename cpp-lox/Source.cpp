@@ -50,6 +50,7 @@ void runFile(const char* file_path) {
 	file.close();
 	run(input);
 	if (lox::hadError) exit(65);
+	if (lox::hadRuntimeError) exit(70);
 
 }
 
@@ -75,8 +76,9 @@ void run(std::string input) {
 	lox::Parser parser(tokens);
 	lox::ExprPtr expr = std::move(parser.parse());
 	if (lox::hadError) return;
-	lox::ASTPrinter printer;
-	std::cout << printer.print(*expr) << std::endl;
+	//TODO
+	lox::Interpreter* interpreter = *lox::Interpreter::getInstance();
+	interpreter->interpret(*expr);
 }
 
 void start(int argc, char** argv) {

@@ -13,11 +13,11 @@ namespace lox {
 		bool isEqual(std::shared_ptr<Value> left, std::shared_ptr<Value> right);
 		void checkNumberOperand(Token op, std::shared_ptr<Value> operand);
 		void checkNumberOperands(Token op, std::shared_ptr<Value> left, std::shared_ptr<Value> right);
-	public:
-		
-		void interpret(Expression* expression);
-
 		std::shared_ptr<Value> evaluate(Expression* expression);
+		static std::shared_ptr<Interpreter*> instance;
+	public:
+		static std::shared_ptr<Interpreter*> getInstance();
+		void interpret(Expression* expression);
 
 		std::shared_ptr<void> visit(Binary* _binary);
 		std::shared_ptr<void> visit(Grouping* _grouping);
