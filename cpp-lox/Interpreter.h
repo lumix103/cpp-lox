@@ -1,14 +1,24 @@
-#ifndef ASTPRINTER_H
-#define ASTPRINTER_H
+#ifndef INTERPRETER_H
+#define INTERPRETER_H
 
 #include "Expression.h"
+#include "Type.h"
+#include "utils.h"
 
 namespace lox {
-	class ASTPrinter : public Visitor {
+
+	class Interpreter : public Visitor {
 	private:
-		std::string parenthesize(std::string name, std::list<Expression*> expressions);
+		bool isTruthy(std::shared_ptr<Value> value);
+		bool isEqual(std::shared_ptr<Value> left, std::shared_ptr<Value> right);
+		void checkNumberOperand(Token op, std::shared_ptr<Value> operand);
+		void checkNumberOperands(Token op, std::shared_ptr<Value> left, std::shared_ptr<Value> right);
+		std::shared_ptr<Value> evaluate(Expression* expression);
+		static std::shared_ptr<Interpreter*> instance;
 	public:
-		std::string print(Expression* expression);
+		static std::shared_ptr<Interpreter*> getInstance();
+		void interpret(Expression* expression);
+
 		std::shared_ptr<void> visit(Binary* _binary);
 		std::shared_ptr<void> visit(Grouping* _grouping);
 		std::shared_ptr<void> visit(Literal* _literal);
@@ -22,7 +32,9 @@ namespace lox {
 		virtual std::shared_ptr<void> visit(Super* _super) { return nullptr; };
 		virtual std::shared_ptr<void> visit(This* _this) { return nullptr; };
 		virtual std::shared_ptr<void> visit(Variable* _variable) { return nullptr; };
+
 	};
+
 }
 
-#endif //ASTPRINTER_H
+#endif //INTERPRETER_H

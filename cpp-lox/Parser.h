@@ -6,7 +6,6 @@
 #include "utils.h"
 namespace lox {
 
-	class ParseError : public std::exception {};
 
 	class Parser {
 	private:
