@@ -32,11 +32,11 @@ namespace lox {
 		std::shared_ptr<void> visit(Assign* _assign);
 		virtual std::shared_ptr<void> visit(Call* _call) { return nullptr; };
 		virtual std::shared_ptr<void> visit(Get* _get) { return nullptr; };
-		virtual std::shared_ptr<void> visit(Logical* _logical) { return nullptr; };
+		std::shared_ptr<void> visit(Logical* _logical);
 		virtual std::shared_ptr<void> visit(Set* _set) { return nullptr; };
 		virtual std::shared_ptr<void> visit(Super* _super) { return nullptr; };
 		virtual std::shared_ptr<void> visit(This* _this) { return nullptr; };
-		virtual std::shared_ptr<void> visit(Variable* _variable);
+		std::shared_ptr<void> visit(Variable* _variable);
 
 		std::shared_ptr<void> visit(ExpressionStatement* _expression);
 		std::shared_ptr<void> visit(Print* _print);
@@ -44,10 +44,10 @@ namespace lox {
 		std::shared_ptr<void> visit(Block* _block);
 		virtual std::shared_ptr<void> visit(Class* _class) { return nullptr; }
 		virtual std::shared_ptr<void> visit(Function* _function) { return nullptr; }
-		virtual std::shared_ptr<void> visit(IfStatement* _if) { return nullptr; }
+		std::shared_ptr<void> visit(IfStatement* _if);
 		virtual std::shared_ptr<void> visit(ReturnStatement* _return) { return nullptr; }
-		virtual std::shared_ptr<void> visit(Var* _var);
-		virtual std::shared_ptr<void> visit(WhileStatement* _while) { return nullptr; }
+		std::shared_ptr<void> visit(Var* _var);
+		std::shared_ptr<void> visit(WhileStatement* _while);
 	};
 
 }

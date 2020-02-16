@@ -6,8 +6,6 @@
 #include "utils.h"
 #include "Statement.h"
 namespace lox {
-
-
 	class Parser {
 	private:
 		std::deque<Token> tokens;
@@ -19,6 +17,8 @@ namespace lox {
 	private:
 		ExprPtr expression();
 		ExprPtr assignement();
+		ExprPtr _or();
+		ExprPtr _and();
 		ExprPtr equality();
 		ExprPtr comparison();
 		ExprPtr addition();
@@ -28,7 +28,10 @@ namespace lox {
 		StmtPtr declaration();
 		StmtPtr varDeclaration();
 		StmtPtr statement();
+		StmtPtr forStatement();
+		StmtPtr ifStatement();
 		StmtPtr printStatement();
+		StmtPtr whileStatement();
 		StmtPtr expressionStatement();
 		std::deque<StmtPtr> block();
 		Token consume(TokenType type, std::string message);

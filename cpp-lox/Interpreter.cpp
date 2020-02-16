@@ -228,6 +228,18 @@ std::shared_ptr<void> lox::Interpreter::visit(Assign* _assign)
 	return value;
 }
 
+std::shared_ptr<void> lox::Interpreter::visit(Logical* _logical)
+{
+	std::shared_ptr<Value> left = evaluate(*_logical->left);
+	if (_logical->op.type == TokenType::OR) {
+		if (isTruthy(left)) return left;
+	}
+	else {
+		if (!isTruthy(left)) return left;
+	}
+	return evaluate(*_logical->right);
+}
+
 std::shared_ptr<void> lox::Interpreter::visit(Variable* _variable)
 {
 	std::shared_ptr<Value> value = std::make_shared<Value>((*env)->get(_variable->name));
@@ -256,6 +268,17 @@ std::shared_ptr<void> lox::Interpreter::visit(Block* _block)
 	return nullptr;
 }
 
+std::shared_ptr<void> lox::Interpreter::visit(IfStatement* _if)
+{
+	if (isTruthy(evaluate(*_if->condition))) {
+		execute(_if->thenBranch);
+	}
+	else if (*_if->thenBranch != nullptr) {
+		execute(_if->elseBranch);
+	}
+	return nullptr;
+}
+
 std::shared_ptr<void> lox::Interpreter::visit(Var* _var)
 {
 	std::shared_ptr<Value> value = nullptr;
@@ -263,5 +286,13 @@ std::shared_ptr<void> lox::Interpreter::visit(Var* _var)
 		value = evaluate(*_var->initializer);
 	}
 	(*env)->define(_var->name.lexeme, *value);
+	return nullptr;
+}
+
+std::shared_ptr<void> lox::Interpreter::visit(WhileStatement* _while)
+{
+	while (isTruthy(evaluate(*_while->condition))) {
+		execute(_while->body);
+	}
 	return nullptr;
 }

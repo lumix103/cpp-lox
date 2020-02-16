@@ -30,7 +30,8 @@ lox::ExprPtr lox::Parser::expression()
 
 lox::ExprPtr lox::Parser::assignement()
 {
-	ExprPtr expr = equality();
+	ExprPtr expr = _or();
+	//ExprPtr expr = equality();
 	if (match({EQUAL})) {
 		Token equals = previous();
 		ExprPtr value = assignement();
@@ -42,6 +43,28 @@ lox::ExprPtr lox::Parser::assignement()
 			return std::make_shared<Expression*>(new Assign(name, value));
 		}
 		error(equals, "Invalid assignment target.");
+	}
+	return expr;
+}
+
+lox::ExprPtr lox::Parser::_or()
+{
+	ExprPtr expr = _and();
+	while (match({ OR })) {
+		Token op = previous();
+		ExprPtr right = _and();
+		expr = std::make_shared<Expression*>(new Logical(expr, op, right));
+	}
+	return expr;
+}
+
+lox::ExprPtr lox::Parser::_and()
+{
+	ExprPtr expr = equality();
+	while (match({ AND })) {
+		Token op = previous();
+		ExprPtr right = equality();
+		expr = std::make_shared<Expression*>(new Logical(expr, op, right));
 	}
 	return expr;
 }
@@ -147,9 +170,71 @@ lox::StmtPtr lox::Parser::varDeclaration()
 
 lox::StmtPtr lox::Parser::statement()
 {
+	if (match({ FOR })) return forStatement();
+	if (match({ IF })) return ifStatement();
 	if (match({ PRINT })) return printStatement();
+	if (match({ WHILE })) return whileStatement();
 	if (match({ LEFT_BRACE })) return std::make_shared<Statement*>(new Block(block()));
 	return expressionStatement();
+}
+
+lox::StmtPtr lox::Parser::forStatement()
+{
+	consume(LEFT_PAREN, "Expect \'(\' after \'if\'.");
+	StmtPtr initializer;
+	if (match({ SEMICOLON })) {
+		initializer = nullptr;
+	}
+	else if (match({ VAR })) {
+		initializer = varDeclaration();
+	}
+	else {
+		initializer = expressionStatement();
+	}
+
+	ExprPtr condition = nullptr;
+	if (!check(SEMICOLON)) {
+		condition = expression();
+	}
+	consume(SEMICOLON, "Expect \';\' after loop condition.");
+
+	ExprPtr increment = nullptr;
+	if (!check(RIGHT_PAREN)) {
+		increment = expression();
+	}
+	consume(RIGHT_PAREN, "Expect \')\' after for clauses.");
+	StmtPtr body = statement();
+
+	if (increment != nullptr) {
+		body = std::make_shared<Statement*>(new Block({ body, std::make_shared<Statement*>(new ExpressionStatement(increment)) }));
+	}
+	if (condition == nullptr) {
+		Token token;
+		token.value = "true";
+		token.lexeme = "true";
+		token.type = TRUE;
+		token.line = tokens[current].line;
+		condition = std::make_shared<Expression*>(new Literal(token));
+	}
+
+	body = std::make_shared<Statement*>(new WhileStatement(condition, body));
+	if (initializer != nullptr) {
+		body = std::make_shared<Statement*>(new Block({ initializer,body }));
+	}
+	return body;
+}
+
+lox::StmtPtr lox::Parser::ifStatement()
+{
+	consume(LEFT_PAREN, "Expect \'(\' after \'if\'.");
+	ExprPtr condition = expression();
+	consume(RIGHT_PAREN, "Expect \')\' after \'if\' condition.");
+	StmtPtr thenBranch = statement();
+	StmtPtr elseBranch = nullptr;
+	if (match({ ELSE })) {
+		elseBranch = statement();
+	}
+	return std::make_shared<Statement*>(new IfStatement(condition, thenBranch, elseBranch));
 }
 
 lox::StmtPtr lox::Parser::printStatement()
@@ -157,6 +242,15 @@ lox::StmtPtr lox::Parser::printStatement()
 	ExprPtr value = expression();
 	consume(SEMICOLON, "Expect \';\' after value.");
 	return std::make_shared<Statement*>(new Print(value));
+}
+
+lox::StmtPtr lox::Parser::whileStatement()
+{
+	consume(LEFT_PAREN, "Expect \'(\' after \'while\'.");
+	ExprPtr condition = expression();
+	consume(RIGHT_PAREN, "Expect \')\' after \'while\' condition.");
+	StmtPtr body = statement();
+	return std::make_shared<Statement*>(new WhileStatement(condition, body));
 }
 
 lox::StmtPtr lox::Parser::expressionStatement()
