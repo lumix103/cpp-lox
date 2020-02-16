@@ -252,7 +252,7 @@ std::shared_ptr<void> lox::Interpreter::visit(Print* _print)
 
 std::shared_ptr<void> lox::Interpreter::visit(Block* _block)
 {
-	executeBlock(_block->statements, std::make_shared<Environment*>(new Environment));
+	executeBlock(_block->statements, std::make_shared<Environment*>(new Environment(this->env)));
 	return nullptr;
 }
 

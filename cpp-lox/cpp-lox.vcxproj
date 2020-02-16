@@ -42,6 +42,9 @@
     <ClInclude Include="Type.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="test.lox" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{664FB8D6-942C-4870-BE52-E13908C92D5B}</ProjectGuid>

@@ -78,4 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="test.lox">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

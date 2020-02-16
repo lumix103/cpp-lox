@@ -26,7 +26,7 @@ void runFile(const char* file_path) {
 		exit(65);
 	}
 	std::string input, line;
-	while (std::getline(file, input))
+	while (std::getline(file, line))
 		input += line;
 	file.close();
 	run(input);
