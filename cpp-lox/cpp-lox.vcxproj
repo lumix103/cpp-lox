@@ -24,6 +24,7 @@
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexer.cpp" />
+    <ClCompile Include="LoxCallable.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Statement.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="Expression.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="LoxCallable.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Statement.h" />
     <ClInclude Include="Token.h" />
@@ -115,6 +117,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

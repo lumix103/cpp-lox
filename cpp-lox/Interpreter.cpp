@@ -1,12 +1,17 @@
 #include "Interpreter.h"
 #include <iostream>
 #include "Environment.h"
-
+#include "LoxCallable.h"
 std::shared_ptr<lox::Interpreter*> lox::Interpreter::instance = nullptr;
 
 lox::Interpreter::Interpreter() 
 {
-	env = std::make_shared<Environment*>(new Environment);
+	globals = std::make_shared<Environment*>(new Environment);
+	Value clock;
+	clock.vtype = CALLABLE;
+	clock.value = std::make_shared<LoxCallable*>(new ClockCallable);
+	(*globals)->define("clock", std::make_shared<Value>(clock));
+	env = globals;
 }
 
 
@@ -77,6 +82,7 @@ void lox::Interpreter::executeBlock(std::deque<StmtPtr> statements, std::shared_
 		}
 	}
 	catch (const std::exception& e) {
+		std::cout << e.what();
 		throw e;
 	}
 	this->env = previous;
@@ -195,8 +201,7 @@ std::shared_ptr<void> lox::Interpreter::visit(Literal* _literal)
 		value.vtype = STR;
 		value.value = _literal->value.value;
 	} else if (_literal->value.type == NIL) {
-		value.vtype = NIL_PTR;
-		value.value = nullptr;
+		value.vtype = NIL_PTR; //?
 	}
 	return std::make_shared<Value>(value);
 }
@@ -224,8 +229,25 @@ std::shared_ptr<void> lox::Interpreter::visit(Unary* _unary)
 std::shared_ptr<void> lox::Interpreter::visit(Assign* _assign)
 {
 	std::shared_ptr<Value> value = evaluate(*_assign->value);
-	(*env)->assign(_assign->name, *value);
+	(*env)->assign(_assign->name, value);
 	return value;
+}
+
+std::shared_ptr<void> lox::Interpreter::visit(Call* _call)
+{
+	std::shared_ptr<Value> value = evaluate(*_call->calle);
+	std::deque<std::shared_ptr<Value>> args;
+	for (ExprPtr arg : _call->arguments) {
+		args.push_back(evaluate(*arg));
+	}
+	if (value->vtype != CALLABLE) {
+		throw RuntimeError(_call->paren, "Can only call functions and classes.");
+	}
+	std::shared_ptr<LoxCallable*> func = std::get <std::shared_ptr<LoxCallable*>>(value->value);
+	if (args.size() != (*func)->arity()) {
+		throw RuntimeError(_call->paren, "Expected " + std::to_string((*func)->arity()) + " arguements but got " + std::to_string(args.size()) + ".");
+	}
+	return (*func)->call(this, args);
 }
 
 std::shared_ptr<void> lox::Interpreter::visit(Logical* _logical)
@@ -242,57 +264,61 @@ std::shared_ptr<void> lox::Interpreter::visit(Logical* _logical)
 
 std::shared_ptr<void> lox::Interpreter::visit(Variable* _variable)
 {
-	std::shared_ptr<Value> value = std::make_shared<Value>((*env)->get(_variable->name));
+	std::shared_ptr<Value> value = (*env)->get(_variable->name);
 	return value;
 }
 
-std::shared_ptr<void> lox::Interpreter::visit(ExpressionStatement* _expression)
+void lox::Interpreter::visit(ExpressionStatement* _expression)
 {
 	evaluate(*_expression->expression);
-	return nullptr;
 }
 
-std::shared_ptr<void> lox::Interpreter::visit(Print* _print)
+void lox::Interpreter::visit(Print* _print)
 {
 	std::shared_ptr<Value> value = std::static_pointer_cast<Value>(evaluate(*_print->expression));
 	if (value->vtype == NIL_PTR)
 		std::cout << "nil" << std::endl;
 	else
 		std::visit([](auto&& arg) { std::cout << std::boolalpha << arg << std::endl; }, value->value);
-	return nullptr;
 }
 
-std::shared_ptr<void> lox::Interpreter::visit(Block* _block)
+void lox::Interpreter::visit(Block* _block)
 {
 	executeBlock(_block->statements, std::make_shared<Environment*>(new Environment(this->env)));
-	return nullptr;
 }
 
-std::shared_ptr<void> lox::Interpreter::visit(IfStatement* _if)
+void lox::Interpreter::visit(Function* _function)
+{
+	std::shared_ptr<LoxCallable*> function = std::make_shared<LoxCallable*>( new LoxFunction(std::make_shared<Function*>(_function)));
+	std::shared_ptr<Value> func = std::make_shared<Value>();
+	func->vtype = CALLABLE;
+	func->value = function;
+	(*env)->define(_function->name.lexeme, func);
+	
+}
+
+void lox::Interpreter::visit(IfStatement* _if)
 {
 	if (isTruthy(evaluate(*_if->condition))) {
 		execute(_if->thenBranch);
 	}
-	else if (*_if->thenBranch != nullptr) {
+	else if (_if->elseBranch != nullptr) {
 		execute(_if->elseBranch);
 	}
-	return nullptr;
 }
 
-std::shared_ptr<void> lox::Interpreter::visit(Var* _var)
+void lox::Interpreter::visit(Var* _var)
 {
 	std::shared_ptr<Value> value = nullptr;
 	if (_var->initializer != nullptr) {
 		value = evaluate(*_var->initializer);
 	}
-	(*env)->define(_var->name.lexeme, *value);
-	return nullptr;
+	(*env)->define(_var->name.lexeme, value);
 }
 
-std::shared_ptr<void> lox::Interpreter::visit(WhileStatement* _while)
+void lox::Interpreter::visit(WhileStatement* _while)
 {
 	while (isTruthy(evaluate(*_while->condition))) {
 		execute(_while->body);
 	}
-	return nullptr;
 }

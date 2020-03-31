@@ -114,6 +114,37 @@ lox::ExprPtr lox::Parser::multiplcation()
 	return expr;
 }
 
+lox::ExprPtr lox::Parser::call()
+{
+	ExprPtr expr = primary();
+	while (true) {
+		if (match({ LEFT_PAREN })) {
+			expr = finishCall(expr);
+		}
+		else {
+			break;
+		}
+	}
+
+	return expr;
+}
+
+lox::ExprPtr lox::Parser::finishCall(lox::ExprPtr expr)
+{
+	std::deque<ExprPtr> args;
+	if (!check(RIGHT_PAREN)) {
+		do {
+			if (args.size() >= 255)
+			{
+				error(peek(), "Cannot have more than 255 arguements");
+			}
+			args.push_back(expression());
+		} while (match({ COMMA }));
+	}
+	Token paren = consume(RIGHT_PAREN, "Expect \')\' after arguements");
+	return std::make_shared<Expression*>(new Call(expr, paren, args));
+}
+
 lox::ExprPtr lox::Parser::unary()
 {
 	if (match({ lox::BANG, lox::MINUS })) {
@@ -122,7 +153,7 @@ lox::ExprPtr lox::Parser::unary()
 		lox::ExprPtr expr = std::make_shared<lox::Expression*>(new lox::Unary(op, std::move(right)));
 		return expr;
 	}
-	return primary();
+	return call();
 }
 
 lox::ExprPtr lox::Parser::primary()
@@ -146,6 +177,7 @@ lox::ExprPtr lox::Parser::primary()
 lox::StmtPtr lox::Parser::declaration()
 {
 	try {
+		if (match({ FUN })) return function("function");
 		if (match({ VAR }))
 			return varDeclaration();
 		return statement();
@@ -222,6 +254,24 @@ lox::StmtPtr lox::Parser::forStatement()
 		body = std::make_shared<Statement*>(new Block({ initializer,body }));
 	}
 	return body;
+}
+
+lox::StmtPtr lox::Parser::function(std::string kind)
+{
+	Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+	consume(LEFT_PAREN, "Expect \'(\' after " + kind + " name.");
+	std::deque<Token> parameters;
+	if (!check(RIGHT_PAREN)) {
+		do {
+			if (parameters.size() >= 255)
+				error(peek(), "Cannot have more than 255 parameters.");
+			parameters.push_back(consume(IDENTIFIER, "Expect parameter name."));
+		} while (match({ COMMA }));
+	}
+	consume(RIGHT_PAREN, "Expect \')\' after parameters.");
+	consume(LEFT_BRACE, "Expect \'{\' before " + kind + " body.");
+	std::deque<StmtPtr> body = block();
+	return std::make_shared<Statement*>(new Function(name,parameters,body));
 }
 
 lox::StmtPtr lox::Parser::ifStatement()

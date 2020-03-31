@@ -12,12 +12,13 @@ namespace lox {
 	public:
 		Environment();
 		Environment(std::shared_ptr<Environment*> enclosing);
-		void define(std::string name, Value value);
-		Value get(Token name);
-		void assign(Token name, Value value);
+		void define(std::string name, std::shared_ptr<Value> value);
+		const std::shared_ptr<Value> get(Token name);
+		void assign(Token name, std::shared_ptr<Value> value);
 	private:
-		std::unordered_map<std::string, Value> values;
+		std::unordered_map<std::string, std::shared_ptr<Value>> values;
 		std::shared_ptr<Environment*> enclosing;
+		std::shared_ptr<Value> NIL;
 	};
 }
 

@@ -23,12 +23,15 @@ namespace lox {
 		ExprPtr comparison();
 		ExprPtr addition();
 		ExprPtr multiplcation();
+		ExprPtr call();
+		ExprPtr finishCall(ExprPtr expr);
 		ExprPtr unary();
 		ExprPtr primary();
 		StmtPtr declaration();
 		StmtPtr varDeclaration();
 		StmtPtr statement();
 		StmtPtr forStatement();
+		StmtPtr function(std::string kind);
 		StmtPtr ifStatement();
 		StmtPtr printStatement();
 		StmtPtr whileStatement();
